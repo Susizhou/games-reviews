@@ -21,19 +21,13 @@ describe("/ap/categories", () => {
         .then(({ body }) => {
             expect(body.categories).toBeInstanceOf(Array)
             expect(body.categories).toHaveLength(4)
-            const categories = [
-              { slug: 'euro game', description: 'Abstact games that involve little luck' },
-              {
-                slug: 'social deduction',
-                description: "Players attempt to uncover each other's hidden role"
-              },
-              { slug: 'dexterity', description: 'Games involving physical skill' },
-              { slug: "children's games", description: 'Games suitable for children' }
-            ]
             
-            categories.forEach((category)=>{
-              expect(body.categories).toContainEqual(category);
-            })
+            body.categories.forEach((category)=>{
+              expect(category).toMatchObject({
+                slug: expect.any(String),
+                description: expect.any(String)
+              });
+            }) 
         });
     });
 
