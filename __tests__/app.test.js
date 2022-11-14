@@ -66,7 +66,7 @@ describe("/api/reviews", () => {
             });
           });
 
-          expect(body.reviews).toBeSortedBy('created_at', 'asc')
+          expect(body.reviews).toBeSortedBy('created_at', {descending: true})
 
         });
     });
