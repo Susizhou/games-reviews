@@ -1,7 +1,7 @@
 const express = require("express");
 const {
   getCategories,
-  getReviews
+  getReviews,
   getReviews_byID,
 } = require("./controllers/games.controllers.js");
 
