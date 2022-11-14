@@ -14,7 +14,6 @@ afterAll(() => {
 
 describe("/ap/categories", () => {
   describe("get request", () => {
-    
     test("shoul return all categories with the with the following column properties: slug and description", () => {
       return request(app)
         .get("/api/categories")
@@ -42,6 +41,5 @@ describe("/ap/categories", () => {
             expect(body.msg).toBe('Route not found')
         })
     });
-
   });
 });
