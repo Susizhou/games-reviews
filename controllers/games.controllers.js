@@ -5,6 +5,7 @@ const {
   fetchCommentsByReview,
   addComment,
   updateReview,
+  fetchUsers,
 } = require("../models/games.models");
 
 exports.getCategories = (req, res) => {
@@ -64,6 +65,16 @@ exports.patchReview = (req, res, next) => {
   updateReview(review_id, body)
     .then((review) => {
       res.status(201).send({ review });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUsers = (req, res, next) => {
+  fetchUsers()
+    .then((users) => {
+      res.send({ users });
     })
     .catch((err) => {
       next(err);

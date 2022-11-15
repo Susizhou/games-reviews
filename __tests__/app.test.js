@@ -125,8 +125,8 @@ describe("/api/reviews/:review_id", () => {
   describe("patch request", () => {
     test("should update votes of the review ", () => {
       const updateInfo = {
-        inc_votes: 1
-      }
+        inc_votes: 1,
+      };
 
       return request(app)
         .patch("/api/reviews/1")
@@ -134,136 +134,133 @@ describe("/api/reviews/:review_id", () => {
         .expect(201)
         .then(({ body }) => {
           expect(body.review).toMatchObject({
-              title: 'Agricola',
-              designer: 'Uwe Rosenberg',
-              owner: 'mallionaire',
-              review_img_url:
-                'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-              review_body: 'Farmyard fun!',
-              category: 'euro game',
-              created_at: expect.any(String),
-              votes: 2
-          })
+            title: "Agricola",
+            designer: "Uwe Rosenberg",
+            owner: "mallionaire",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "Farmyard fun!",
+            category: "euro game",
+            created_at: expect.any(String),
+            votes: 2,
+          });
         });
     });
 
     test("should give error if the body input does not match the object format ", () => {
       const updateInfo = {
-        votes: 1
-      }
+        votes: 1,
+      };
 
       return request(app)
         .patch("/api/reviews/1")
         .send(updateInfo)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Input data format was not correct")
+          expect(body.msg).toBe("Input data format was not correct");
         });
     });
 
-    test('give error if invalid id is given', () => {
+    test("give error if invalid id is given", () => {
       const updateInfo = {
-        inc_votes: 1
-      }
+        inc_votes: 1,
+      };
 
       return request(app)
         .patch("/api/reviews/100")
         .send(updateInfo)
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("ID does not exist")
+          expect(body.msg).toBe("ID does not exist");
         });
     });
 
-    test('give error if invalid type id is given', () => {
+    test("give error if invalid type id is given", () => {
       const updateInfo = {
-        inc_votes: 1
-      }
+        inc_votes: 1,
+      };
 
       return request(app)
         .patch("/api/reviews/hello")
         .send(updateInfo)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Invalid parameter")
+          expect(body.msg).toBe("Invalid parameter");
         });
-
     });
 
-    test('ignores extra unnecessary information if given', () => {
+    test("ignores extra unnecessary information if given", () => {
       const updateInfo = {
         inc_votes: 10,
-        designer: 'Susana'
-      }
+        designer: "Susana",
+      };
 
       return request(app)
-      .patch("/api/reviews/1")
-      .send(updateInfo)
-      .expect(201)
-      .then(({ body }) => {
-        expect(body.review).toMatchObject({
-            title: 'Agricola',
-            designer: 'Uwe Rosenberg',
-            owner: 'mallionaire',
+        .patch("/api/reviews/1")
+        .send(updateInfo)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.review).toMatchObject({
+            title: "Agricola",
+            designer: "Uwe Rosenberg",
+            owner: "mallionaire",
             review_img_url:
-              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-            review_body: 'Farmyard fun!',
-            category: 'euro game',
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "Farmyard fun!",
+            category: "euro game",
             created_at: expect.any(String),
-            votes: 11
-        })
-      });
+            votes: 11,
+          });
+        });
     });
 
-    test('works ith decreasing number of votes', () => {
+    test("works ith decreasing number of votes", () => {
       const updateInfo = {
         inc_votes: -1,
-      }
+      };
 
       return request(app)
-      .patch("/api/reviews/1")
-      .send(updateInfo)
-      .expect(201)
-      .then(({ body }) => {
-        expect(body.review).toMatchObject({
-            title: 'Agricola',
-            designer: 'Uwe Rosenberg',
-            owner: 'mallionaire',
+        .patch("/api/reviews/1")
+        .send(updateInfo)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.review).toMatchObject({
+            title: "Agricola",
+            designer: "Uwe Rosenberg",
+            owner: "mallionaire",
             review_img_url:
-              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-            review_body: 'Farmyard fun!',
-            category: 'euro game',
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "Farmyard fun!",
+            category: "euro game",
             created_at: expect.any(String),
-            votes: 0
-        })
-      });
+            votes: 0,
+          });
+        });
     });
 
-    test('works ith decreasing number of votes into negative voting', () => {
+    test("works ith decreasing number of votes into negative voting", () => {
       const updateInfo = {
         inc_votes: -10,
-      }
+      };
 
       return request(app)
-      .patch("/api/reviews/1")
-      .send(updateInfo)
-      .expect(201)
-      .then(({ body }) => {
-        expect(body.review).toMatchObject({
-            title: 'Agricola',
-            designer: 'Uwe Rosenberg',
-            owner: 'mallionaire',
+        .patch("/api/reviews/1")
+        .send(updateInfo)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.review).toMatchObject({
+            title: "Agricola",
+            designer: "Uwe Rosenberg",
+            owner: "mallionaire",
             review_img_url:
-              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-            review_body: 'Farmyard fun!',
-            category: 'euro game',
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "Farmyard fun!",
+            category: "euro game",
             created_at: expect.any(String),
-            votes: -9
-        })
-      });
+            votes: -9,
+          });
+        });
     });
-
-
   });
 });
 
@@ -426,6 +423,34 @@ describe("/api/reviews/:review_id/comments", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Input data format was not correct");
+        });
+    });
+  });
+});
+
+describe("/api/users", () => {
+  describe("get request", () => {
+    test("that the returned array objects have the correct properties", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({body}) => {
+          body.users.forEach((user) =>{
+            expect(user).toMatchObject({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String)
+            })
+          })
+        });
+    });
+
+    test('wrong url input to the request', () => {
+      return request(app)
+        .get("/api/user")
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe("Route not found");
         });
     });
   });

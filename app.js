@@ -7,6 +7,7 @@ const {
   getCommentsByReview,
   postComment,
   patchReview,
+  getUsers,
 } = require("./controllers/games.controllers.js");
 
 const app = express();
@@ -19,6 +20,8 @@ app.get('/api/reviews/:review_id/comments', getCommentsByReview)
 
 app.post('/api/reviews/:review_id/comments', postComment)
 app.patch('/api/reviews/:review_id', patchReview)
+
+app.get('/api/users', getUsers)
 
 
 app.use((err, req, res, next) => {

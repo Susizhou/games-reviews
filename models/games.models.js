@@ -99,3 +99,12 @@ exports.updateReview = (review_id, body) => {
     return review.rows[0]
   });
 };
+
+
+exports.fetchUsers = ()=>{
+    return db.query(`
+    SELECT * FROM users;
+    `).then((users)=>{
+        return users.rows
+    })
+}
