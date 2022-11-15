@@ -45,7 +45,32 @@ exports.fetchCommentsByReview = (review_id) => {
       );
     })
     .then((comments) => {
-
       return comments.rows;
+    });
+};
+
+exports.addComment = (review_id, body_req) => {
+  const { body, author } = body_req;
+  const created_at = new Date();
+
+  if (!body || !author) {
+    return Promise.reject({
+      status: 400,
+      msg: "Input data format was not correct",
+    });
+  }
+
+    return db.query(
+        `
+        INSERT INTO comments 
+        (body, author, review_id, votes , created_at)
+        VALUES 
+        ($1,$2,$3,$4,$5)
+        RETURNING *;
+    `,
+        [body, author, review_id, 0, created_at]
+      )
+    .then((comment) => {
+      return comment.rows[0];
     });
 };
