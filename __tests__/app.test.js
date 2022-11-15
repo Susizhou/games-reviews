@@ -215,6 +215,54 @@ describe("/api/reviews/:review_id", () => {
       });
     });
 
+    test('works ith decreasing number of votes', () => {
+      const updateInfo = {
+        inc_votes: -1,
+      }
+
+      return request(app)
+      .patch("/api/reviews/1")
+      .send(updateInfo)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.review).toMatchObject({
+            title: 'Agricola',
+            designer: 'Uwe Rosenberg',
+            owner: 'mallionaire',
+            review_img_url:
+              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+            review_body: 'Farmyard fun!',
+            category: 'euro game',
+            created_at: expect.any(String),
+            votes: 0
+        })
+      });
+    });
+
+    test('works ith decreasing number of votes into negative voting', () => {
+      const updateInfo = {
+        inc_votes: -10,
+      }
+
+      return request(app)
+      .patch("/api/reviews/1")
+      .send(updateInfo)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.review).toMatchObject({
+            title: 'Agricola',
+            designer: 'Uwe Rosenberg',
+            owner: 'mallionaire',
+            review_img_url:
+              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+            review_body: 'Farmyard fun!',
+            category: 'euro game',
+            created_at: expect.any(String),
+            votes: -9
+        })
+      });
+    });
+
 
   });
 });
