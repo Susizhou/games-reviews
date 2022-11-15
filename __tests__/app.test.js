@@ -82,6 +82,7 @@ describe("/api/reviews", () => {
   });
 });
 
+
 describe('/api/reviews/:review_id', () => {
   describe('get request ', () => {
     test('returns the review of the id given', () => {
@@ -118,6 +119,60 @@ describe('/api/reviews/:review_id', () => {
       .expect(400)
       .then(({body}) => {
         expect(body.msg).toEqual('Invalid parameter')
+      })
+    });
+  });
+});
+
+describe('/api/reviews/:review_id/comments', () => {
+  describe('get request', () => {
+    test('get all comments of the review with the given id', () => {
+      return request(app)
+      .get('/api/reviews/3/comments')
+      .expect(200)
+      .then(({body})=>{
+        expect(body.comments).toBeInstanceOf(Array)
+        expect(body.comments).toHaveLength(3)
+
+        expect(body.comments).toBeSortedBy('created_at', {descending: true})
+
+        body.comments.forEach((comment)=>{
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            review_id: 3
+          })
+        })
+      })
+    });
+
+    test('should give error if id given is out of range', () => {
+      return request(app)
+      .get('/api/reviews/100/comments')
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toEqual('ID does not exist')
+      })
+    });
+
+    test('should give error if given parameter is invalid', () => {
+      return request(app)
+      .get('/api/reviews/hello/comments')
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toEqual('Invalid parameter')
+      })
+    });
+
+    test('should return empty array if no comments in specific review_id', () => {
+      return request(app)
+      .get('/api/reviews/1/comments')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.comments).toEqual([])
       })
     });
   });

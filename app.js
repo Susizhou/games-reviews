@@ -3,6 +3,7 @@ const {
   getCategories,
   getReviews,
   getReviews_byID,
+  getCommentsByReview,
 } = require("./controllers/games.controllers.js");
 
 const app = express();
@@ -10,6 +11,7 @@ const app = express();
 app.get("/api/categories", getCategories);
 app.get('/api/reviews', getReviews)
 app.get("/api/reviews/:review_id", getReviews_byID);
+app.get('/api/reviews/:review_id/comments', getCommentsByReview)
 
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {
