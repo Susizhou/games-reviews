@@ -167,7 +167,7 @@ describe('/api/reviews/:review_id/comments', () => {
       })
     });
 
-    test('should give error if id given is out of range', () => {
+    test('should return empty array if no comments in specific review_id', () => {
       return request(app)
       .get('/api/reviews/1/comments')
       .expect(200)
