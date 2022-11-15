@@ -60,9 +60,7 @@ exports.addComment = (review_id, body_req) => {
     });
   }
 
-  return this.fetchReviewsByID(review_id)
-    .then(() => {
-      return db.query(
+    return db.query(
         `
         INSERT INTO comments 
         (body, author, review_id, votes , created_at)
@@ -71,8 +69,7 @@ exports.addComment = (review_id, body_req) => {
         RETURNING *;
     `,
         [body, author, review_id, 0, created_at]
-      );
-    })
+      )
     .then((comment) => {
       return comment.rows[0];
     });

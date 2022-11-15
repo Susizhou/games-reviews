@@ -28,7 +28,7 @@ app.use((err, req, res, next) => {
 
   app.use((err, req, res, next) => {
     if (err.code === '23503' ) {
-      res.status(400).send({ msg: "Given author does not exist" });
+      res.status(400).send({ msg: "Bad request: Referenced parameter does not exist" });
     } else {
       next(err);
     }

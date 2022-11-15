@@ -211,7 +211,7 @@ describe("/api/reviews/:review_id/comments", () => {
         .send(newComment)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Given author does not exist")
+          expect(body.msg).toBe("Bad request: Referenced parameter does not exist")
         });
     });
 
@@ -224,9 +224,9 @@ describe("/api/reviews/:review_id/comments", () => {
       return request(app)
         .post("/api/reviews/100/comments")
         .send(newComment)
-        .expect(404)
+        .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("ID does not exist");
+          expect(body.msg).toBe("Bad request: Referenced parameter does not exist");
         });
     });
 
