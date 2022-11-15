@@ -19,8 +19,16 @@ app.get('/api/reviews/:review_id/comments', getCommentsByReview)
 app.post('/api/reviews/:review_id/comments', postComment)
 
 app.use((err, req, res, next) => {
-    if (err.code === "22P02") {
+    if (err.code === "22P02" ) {
       res.status(400).send({ msg: "Invalid parameter" });
+    } else {
+      next(err);
+    }
+  });
+
+  app.use((err, req, res, next) => {
+    if (err.code === '23503' ) {
+      res.status(400).send({ msg: "Given author does not exist" });
     } else {
       next(err);
     }

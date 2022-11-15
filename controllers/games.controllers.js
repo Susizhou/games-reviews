@@ -47,8 +47,9 @@ exports.getCommentsByReview = (req, res, next) => {
 exports.postComment = (req, res, next) => {
   const { review_id } = req.params;
   const body = req.body;
-  console.log(body)
   addComment(review_id, body).then((comment) => {
     res.status(201).send({ comment });
+  }).catch((err)=>{
+    next(err)
   });
 };
