@@ -174,4 +174,30 @@ describe('/api/reviews/:review_id/comments', () => {
       })
     });
   });
+
+  describe('post request', () => {
+    test("posts the new treasure with a status code of 201", () => {
+      const newComment = {
+          votes: 10,
+          created_at: new Date(1523569852365),
+          author: 'bainesface',
+          body: 'EPIC board game!',
+      };
+
+      return request(app)
+        .post("/api/reviews/1/comments")
+        .send(newComment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment).toMatchObject({
+            comment_id: 7,
+            review_id: 1,
+            votes: 10,
+            created_at: "2018-04-12T20:50:52.365Z",
+            author: 'bainesface',
+            body: 'EPIC board game!'});
+        });
+    });
+
+  });
 });
