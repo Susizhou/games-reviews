@@ -89,7 +89,7 @@ describe('/api/reviews/:review_id', () => {
       .get('/api/reviews/1')
       .expect(200)
       .then(({body}) =>{
-        expect(body.review).toEqual({
+        expect(body.review).toMatchObject({
           category: "euro game",
           created_at: "2021-01-18T10:00:20.514Z",
           designer: "Uwe Rosenberg",
