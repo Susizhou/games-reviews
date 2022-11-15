@@ -40,14 +40,12 @@ exports.fetchCommentsByReview = (review_id) => {
       return db.query(
         "SELECT * FROM comments\
         WHERE review_id = $1\
-        ORDER BY CREATED_AT",
+        ORDER BY CREATED_AT DESC",
         [review_id]
       );
     })
     .then((comments) => {
-      if (comments.rows.length === 0) {
-        return Promise.reject({status: 404, msg: 'No comments in this review'});
-      }
+
       return comments.rows;
     });
 };

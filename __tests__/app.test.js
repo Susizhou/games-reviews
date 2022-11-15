@@ -134,6 +134,8 @@ describe('/api/reviews/:review_id/comments', () => {
         expect(body.comments).toBeInstanceOf(Array)
         expect(body.comments).toHaveLength(3)
 
+        expect(body.comments).toBeSortedBy('created_at', {descending: true})
+
         body.comments.forEach((comment)=>{
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
@@ -156,7 +158,7 @@ describe('/api/reviews/:review_id/comments', () => {
       })
     });
 
-    test('should give error if id given is out of range', () => {
+    test('should give error if given parameter is invalid', () => {
       return request(app)
       .get('/api/reviews/hello/comments')
       .expect(400)
@@ -165,12 +167,12 @@ describe('/api/reviews/:review_id/comments', () => {
       })
     });
 
-    test('should give error if id given is out of range', () => {
+    test('should return empty array if no comments in specific review_id', () => {
       return request(app)
       .get('/api/reviews/1/comments')
-      .expect(404)
+      .expect(200)
       .then(({body}) => {
-        expect(body.msg).toEqual('No comments in this review')
+        expect(body.comments).toEqual([])
       })
     });
   });
