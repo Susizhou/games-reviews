@@ -121,6 +121,10 @@ describe("/api/reviews/:review_id", () => {
         });
     });
   });
+
+  describe("patch request", () => {
+    test("should ", () => {});
+  });
 });
 
 describe("/api/reviews/:review_id/comments", () => {
@@ -200,9 +204,32 @@ describe("/api/reviews/:review_id/comments", () => {
         });
     });
 
+    test("if unnecessary information is given, it is ignored", () => {
+      const newComment = {
+        author: "bainesface",
+        body: "EPIC board game!",
+        review_id: 50,
+      };
+
+      return request(app)
+        .post("/api/reviews/1/comments")
+        .send(newComment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment).toMatchObject({
+            comment_id: 7,
+            review_id: 1,
+            votes: 0,
+            created_at: expect.any(String),
+            author: "bainesface",
+            body: "EPIC board game!",
+          });
+        });
+    });
+
     test("give appropriate error if author does not exist", () => {
       const newComment = {
-        author: 'Susana',
+        author: "Susana",
         body: "EPIC board game!",
       };
 
@@ -211,11 +238,13 @@ describe("/api/reviews/:review_id/comments", () => {
         .send(newComment)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Bad request: Referenced parameter does not exist")
+          expect(body.msg).toBe(
+            "Bad request: Referenced parameter does not exist"
+          );
         });
     });
 
-    test('when the review_id does not exist, give appropriate error', () => {
+    test("when the review_id does not exist, give appropriate error", () => {
       const newComment = {
         author: "bainesface",
         body: "EPIC board game!",
@@ -226,11 +255,13 @@ describe("/api/reviews/:review_id/comments", () => {
         .send(newComment)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Bad request: Referenced parameter does not exist");
+          expect(body.msg).toBe(
+            "Bad request: Referenced parameter does not exist"
+          );
         });
     });
 
-    test('when the review_id is not given correctly as int', () => {
+    test("when the review_id is not given correctly as int", () => {
       const newComment = {
         author: "bainesface",
         body: "EPIC board game!",
