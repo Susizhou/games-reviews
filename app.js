@@ -8,10 +8,13 @@ const {
   postComment,
   patchReview,
   getUsers,
+  getEndpoints
 } = require("./controllers/games.controllers.js");
 
 const app = express();
 app.use(express.json())
+
+app.get('/api', getEndpoints)
 
 app.get("/api/categories", getCategories);
 app.get('/api/reviews', getReviews)
