@@ -99,6 +99,28 @@ describe("/api/reviews/:review_id", () => {
               "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
             title: "Agricola",
             votes: 1,
+            comment_count: '0'
+          });
+        });
+    });
+
+    test("should return the number of comments for a review with comments", () => {
+      return request(app)
+        .get("/api/reviews/3")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.review).toMatchObject({
+            category: "social deduction",
+            created_at: "2021-01-18T10:01:41.251Z",
+            designer: "Akihisa Okui",
+            owner: "bainesface",
+            review_body: "We couldn't find the werewolf!",
+            review_id: 3,
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            title: "Ultimate Werewolf",
+            votes: 5,
+            comment_count: '3'
           });
         });
     });
