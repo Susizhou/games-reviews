@@ -10,8 +10,8 @@ exports.fetchReviews = (queryObj) => {
     if (Object.keys(queryObj).length !== 0) {
       const possQuery = ["order", "sort_by", "category"];
   
-      bool = Object.keys(queryObj).every((key) => possQuery.includes(key));
-      if (!bool) {
+      const isValidQuery = Object.keys(queryObj).every((key) => possQuery.includes(key));
+      if (!isValidQuery) {
         return Promise.reject({ status: 400, msg: "Invalid query" });
       }
     }
@@ -26,6 +26,11 @@ exports.fetchReviews = (queryObj) => {
   
     if (!["ASC", "DESC", 'asc', 'desc', undefined].includes(order)) {
       return Promise.reject({ status: 400, msg: "Invalid order query" });
+    }
+    //console.log(['euro game', 'social deduction', 'dexterity', "children's games"].includes("children's games"))
+    if (!['euro game', 'social deduction', 'dexterity', "children's games", undefined].includes(category)){
+        console.log('line 32')
+        return Promise.reject({status:400, msg: 'Given category does not exist'})
     }
   
     const infoArray = []
@@ -54,9 +59,6 @@ exports.fetchReviews = (queryObj) => {
         queryStr, infoArray
       )
       .then((reviews) => {
-          if (reviews.rows.length === 0) {
-              return Promise.reject({status:400, msg: 'Given category does not exist'})
-          }
         return reviews.rows;
       });
   };
