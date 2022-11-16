@@ -123,7 +123,147 @@ describe("/api/reviews/:review_id", () => {
   });
 
   describe("patch request", () => {
-    test("should ", () => {});
+    test("should update votes of the review ", () => {
+      const updateInfo = {
+        inc_votes: 1
+      }
+
+      return request(app)
+        .patch("/api/reviews/1")
+        .send(updateInfo)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.review).toMatchObject({
+              title: 'Agricola',
+              designer: 'Uwe Rosenberg',
+              owner: 'mallionaire',
+              review_img_url:
+                'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+              review_body: 'Farmyard fun!',
+              category: 'euro game',
+              created_at: expect.any(String),
+              votes: 2
+          })
+        });
+    });
+
+    test("should give error if the body input does not match the object format ", () => {
+      const updateInfo = {
+        votes: 1
+      }
+
+      return request(app)
+        .patch("/api/reviews/1")
+        .send(updateInfo)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Input data format was not correct")
+        });
+    });
+
+    test('give error if given id is out of bounds is given', () => {
+      const updateInfo = {
+        inc_votes: 1
+      }
+
+      return request(app)
+        .patch("/api/reviews/100")
+        .send(updateInfo)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("ID does not exist")
+        });
+    });
+
+    test('give error if invalid type id is given', () => {
+      const updateInfo = {
+        inc_votes: 1
+      }
+
+      return request(app)
+        .patch("/api/reviews/hello")
+        .send(updateInfo)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid parameter")
+        });
+
+    });
+
+    test('ignores extra unnecessary information if given', () => {
+      const updateInfo = {
+        inc_votes: 10,
+        designer: 'Susana'
+      }
+
+      return request(app)
+      .patch("/api/reviews/1")
+      .send(updateInfo)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.review).toMatchObject({
+            title: 'Agricola',
+            designer: 'Uwe Rosenberg',
+            owner: 'mallionaire',
+            review_img_url:
+              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+            review_body: 'Farmyard fun!',
+            category: 'euro game',
+            created_at: expect.any(String),
+            votes: 11
+        })
+      });
+    });
+
+    test('works with decreasing number of votes', () => {
+      const updateInfo = {
+        inc_votes: -1,
+      }
+
+      return request(app)
+      .patch("/api/reviews/1")
+      .send(updateInfo)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.review).toMatchObject({
+            title: 'Agricola',
+            designer: 'Uwe Rosenberg',
+            owner: 'mallionaire',
+            review_img_url:
+              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+            review_body: 'Farmyard fun!',
+            category: 'euro game',
+            created_at: expect.any(String),
+            votes: 0
+        })
+      });
+    });
+
+    test('works with decreasing number of votes into negative voting', () => {
+      const updateInfo = {
+        inc_votes: -10,
+      }
+
+      return request(app)
+      .patch("/api/reviews/1")
+      .send(updateInfo)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.review).toMatchObject({
+            title: 'Agricola',
+            designer: 'Uwe Rosenberg',
+            owner: 'mallionaire',
+            review_img_url:
+              'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+            review_body: 'Farmyard fun!',
+            category: 'euro game',
+            created_at: expect.any(String),
+            votes: -9
+        })
+      });
+    });
+
+
   });
 });
 

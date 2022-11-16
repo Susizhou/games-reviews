@@ -60,17 +60,42 @@ exports.addComment = (review_id, body_req) => {
     });
   }
 
-    return db.query(
-        `
+  return db
+    .query(
+      `
         INSERT INTO comments 
         (body, author, review_id, votes , created_at)
         VALUES 
         ($1,$2,$3,$4,$5)
         RETURNING *;
     `,
-        [body, author, review_id, 0, created_at]
-      )
+      [body, author, review_id, 0, created_at]
+    )
     .then((comment) => {
       return comment.rows[0];
     });
+};
+
+exports.updateReview = (review_id, body) => {
+  const { inc_votes } = body;
+
+  if (!inc_votes) {
+    return Promise.reject({
+      status: 400,
+      msg: "Input data format was not correct",
+    });
+  }
+  return this.fetchReviewsByID(review_id).then(()=>{
+    return db.query(
+        `
+        UPDATE reviews 
+        SET votes = votes + $1
+        WHERE review_id = $2
+        RETURNING *;
+        `,
+        [inc_votes, review_id]
+      )
+  }).then((review)=>{
+    return review.rows[0]
+  });
 };
