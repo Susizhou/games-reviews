@@ -64,8 +64,10 @@ exports.fetchReviews = (queryObj) => {
 exports.fetchReviewsByID = (review_id) => {
   return db
     .query(
-      "SELECT review_id, title, review_body, designer, review_img_url, votes, category, owner, created_at FROM reviews\
-    WHERE review_id = $1",
+      `SELECT reviews.review_id, title, review_body, designer, review_img_url, reviews.votes, category, owner, reviews.created_at, CAST(COUNT(comment_id) AS INT) AS comment_count FROM reviews\
+      LEFT JOIN comments ON comments.review_id = reviews.review_id
+      WHERE reviews.review_id = $1
+      GROUP BY reviews.review_id;`,
       [review_id]
     )
     .then((review) => {
