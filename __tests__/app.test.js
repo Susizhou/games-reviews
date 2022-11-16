@@ -89,18 +89,20 @@ describe("/api/reviews", () => {
             expect(body.reviews).toBeInstanceOf(Array);
             expect(body.reviews).toHaveLength(1);
 
-            expect(body.reviews[0]).toMatchObject({
-              category: "dexterity",
-              comment_count: 3,
-              created_at: "2021-01-18T10:01:41.251Z",
-              designer: "Leslie Scott",
-              owner: "philippaclaire9",
-              review_id: 2,
-              review_img_url:
-                "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-              title: "Jenga",
-              votes: 5,
-            });
+            body.reviews.forEach((review)=>{
+              expect(review).toMatchObject({
+                category: "dexterity",
+                comment_count: expect.any(Number),
+                created_at: expect.any(String),
+                designer: expect.any(String),
+                owner: expect.any(String),
+                review_id: expect.any(Number),
+                review_img_url:
+                expect.any(String),
+                title: expect.any(String),
+                votes: expect.any(Number),
+              })
+            })
 
             expect(body.reviews).toBeSortedBy("created_at", {
               descending: true,
@@ -117,20 +119,6 @@ describe("/api/reviews", () => {
             expect(body.reviews).toBeInstanceOf(Array);
             expect(body.reviews).toHaveLength(13);
 
-            body.reviews.forEach((review) => {
-              expect(review).toMatchObject({
-                owner: expect.any(String),
-                title: expect.any(String),
-                review_id: expect.any(Number),
-                category: expect.any(String),
-                review_img_url: expect.any(String),
-                created_at: expect.any(String),
-                votes: expect.any(Number),
-                designer: expect.any(String),
-                comment_count: expect.any(Number),
-              });
-            });
-
             expect(body.reviews).toBeSortedBy("votes", { descending: true });
           
           });
@@ -143,20 +131,6 @@ describe("/api/reviews", () => {
         .then(({ body }) => {
           expect(body.reviews).toBeInstanceOf(Array);
           expect(body.reviews).toHaveLength(13);
-
-          body.reviews.forEach((review) => {
-            expect(review).toMatchObject({
-              owner: expect.any(String),
-              title: expect.any(String),
-              review_id: expect.any(Number),
-              category: expect.any(String),
-              review_img_url: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              designer: expect.any(String),
-              comment_count: expect.any(Number),
-            });
-          });
 
           expect(body.reviews).toBeSortedBy("created_at", { ascending: true });
         

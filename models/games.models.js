@@ -10,8 +10,8 @@ exports.fetchReviews = (queryObj) => {
     if (Object.keys(queryObj).length !== 0) {
       const possQuery = ["order", "sort_by", "category"];
   
-      bool = Object.keys(queryObj).every((key) => possQuery.includes(key));
-      if (!bool) {
+      const isValidQuery = Object.keys(queryObj).every((key) => possQuery.includes(key));
+      if (!isValidQuery) {
         return Promise.reject({ status: 400, msg: "Invalid query" });
       }
     }
