@@ -99,7 +99,7 @@ describe("/api/reviews/:review_id", () => {
               "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
             title: "Agricola",
             votes: 1,
-            comment_count: '0'
+            comment_count: 0
           });
         });
     });
@@ -120,7 +120,7 @@ describe("/api/reviews/:review_id", () => {
               "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
             title: "Ultimate Werewolf",
             votes: 5,
-            comment_count: '3'
+            comment_count: 3
           });
         });
     });
