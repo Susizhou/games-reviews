@@ -79,7 +79,6 @@ describe("/api/reviews", () => {
         });
     });
 
-
     describe("queries", () => {
       test("accepts category query", () => {
         return request(app)
@@ -89,7 +88,7 @@ describe("/api/reviews", () => {
             expect(body.reviews).toBeInstanceOf(Array);
             expect(body.reviews).toHaveLength(1);
 
-            body.reviews.forEach((review)=>{
+            body.reviews.forEach((review) => {
               expect(review).toMatchObject({
                 category: "dexterity",
                 comment_count: expect.any(Number),
@@ -97,35 +96,43 @@ describe("/api/reviews", () => {
                 designer: expect.any(String),
                 owner: expect.any(String),
                 review_id: expect.any(Number),
-                review_img_url:
-                expect.any(String),
+                review_img_url: expect.any(String),
                 title: expect.any(String),
                 votes: expect.any(Number),
-              })
-            })
+              });
+            });
 
             expect(body.reviews).toBeSortedBy("created_at", {
               descending: true,
             });
           });
-          
       });
 
-      test("accepts sort_by query", () => {
+      test("category exists but no comments in the category, return 200 with empty array", () => {
         return request(app)
-          .get("/api/reviews?sort_by=votes")
+          .get("/api/reviews?category=children's games")
           .expect(200)
           .then(({ body }) => {
             expect(body.reviews).toBeInstanceOf(Array);
-            expect(body.reviews).toHaveLength(13);
-
-            expect(body.reviews).toBeSortedBy("votes", { descending: true });
-          
+            expect(body.reviews).toHaveLength(0);
           });
       });
+    });
 
-      test("accepts order query", () => {
-        return request(app)
+    test("accepts sort_by query", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=votes")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews).toBeInstanceOf(Array);
+          expect(body.reviews).toHaveLength(13);
+
+          expect(body.reviews).toBeSortedBy("votes", { descending: true });
+        });
+    });
+
+    test("accepts order query", () => {
+      return request(app)
         .get("/api/reviews?order=asc")
         .expect(200)
         .then(({ body }) => {
@@ -133,12 +140,11 @@ describe("/api/reviews", () => {
           expect(body.reviews).toHaveLength(13);
 
           expect(body.reviews).toBeSortedBy("created_at", { ascending: true });
-        
         });
-      });
+    });
 
-      test("all queries work together", () => {
-        return request(app)
+    test("all queries work together", () => {
+      return request(app)
         .get("/api/reviews?order=asc&sort_by=title&category=social deduction")
         .expect(200)
         .then(({ body }) => {
@@ -160,46 +166,43 @@ describe("/api/reviews", () => {
           });
 
           expect(body.reviews).toBeSortedBy("title", { ascending: true });
-        
         });
-      });
+    });
 
-      test('if invalid sort input given, return error', () => {
-        return request(app)
+    test("if invalid sort input given, return error", () => {
+      return request(app)
         .get("/api/reviews?sort_by=hello")
         .expect(400)
-        .then(({body}) =>{
-          expect(body.msg).toBe('Invalid sort query')
-        })
-      });
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid sort query");
+        });
+    });
 
-      test('if invalid order input given, return error', () => {
-        return request(app)
+    test("if invalid order input given, return error", () => {
+      return request(app)
         .get("/api/reviews?order=hello")
         .expect(400)
-        .then(({body}) =>{
-          expect(body.msg).toBe('Invalid order query')
-        })
-      });
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid order query");
+        });
+    });
 
-      test('if invalid order input given, return error', () => {
-        return request(app)
+    test("if invalid order input given, return error", () => {
+      return request(app)
         .get("/api/reviews?category=hello")
         .expect(400)
-        .then(({body}) =>{
-          expect(body.msg).toBe('Given category does not exist')
-        })
-      });
+        .then(({ body }) => {
+          expect(body.msg).toBe("Given category does not exist");
+        });
+    });
 
-      test('if invalid query is given, return error', () => {
-        return request(app)
+    test("if invalid query is given, return error", () => {
+      return request(app)
         .get("/api/reviews?name=hello")
         .expect(400)
-        .then(({body}) =>{
-          expect(body.msg).toBe('Invalid query')
-        })
-      });
-
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid query");
+        });
     });
   });
 });
@@ -222,7 +225,7 @@ describe("/api/reviews/:review_id", () => {
               "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
             title: "Agricola",
             votes: 1,
-            comment_count: 0
+            comment_count: 0,
           });
         });
     });
@@ -243,7 +246,7 @@ describe("/api/reviews/:review_id", () => {
               "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
             title: "Ultimate Werewolf",
             votes: 5,
-            comment_count: 3
+            comment_count: 3,
           });
         });
     });
@@ -306,7 +309,7 @@ describe("/api/reviews/:review_id", () => {
         });
     });
 
-    test('give error if given id is out of bounds is given', () => {
+    test("give error if given id is out of bounds is given", () => {
       const updateInfo = {
         inc_votes: 1,
       };
@@ -359,7 +362,7 @@ describe("/api/reviews/:review_id", () => {
         });
     });
 
-    test('works ith decreasing number of votes', () => {
+    test("works ith decreasing number of votes", () => {
       const updateInfo = {
         inc_votes: -1,
       };
@@ -383,7 +386,7 @@ describe("/api/reviews/:review_id", () => {
         });
     });
 
-    test('works ith decreasing number of votes into negative voting', () => {
+    test("works ith decreasing number of votes into negative voting", () => {
       const updateInfo = {
         inc_votes: -10,
       };
@@ -579,22 +582,22 @@ describe("/api/users", () => {
       return request(app)
         .get("/api/users")
         .expect(200)
-        .then(({body}) => {
-          body.users.forEach((user) =>{
+        .then(({ body }) => {
+          body.users.forEach((user) => {
             expect(user).toMatchObject({
               username: expect.any(String),
               name: expect.any(String),
-              avatar_url: expect.any(String)
-            })
-          })
+              avatar_url: expect.any(String),
+            });
+          });
         });
     });
 
-    test('wrong url input to the request', () => {
+    test("wrong url input to the request", () => {
       return request(app)
         .get("/api/user")
         .expect(404)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Route not found");
         });
     });
