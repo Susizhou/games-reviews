@@ -161,7 +161,7 @@ describe("/api/reviews/:review_id", () => {
         });
     });
 
-    test('give error if invalid id is given', () => {
+    test('give error if given id is out of bounds is given', () => {
       const updateInfo = {
         inc_votes: 1
       }
@@ -215,7 +215,7 @@ describe("/api/reviews/:review_id", () => {
       });
     });
 
-    test('works ith decreasing number of votes', () => {
+    test('works with decreasing number of votes', () => {
       const updateInfo = {
         inc_votes: -1,
       }
@@ -239,7 +239,7 @@ describe("/api/reviews/:review_id", () => {
       });
     });
 
-    test('works ith decreasing number of votes into negative voting', () => {
+    test('works with decreasing number of votes into negative voting', () => {
       const updateInfo = {
         inc_votes: -10,
       }
