@@ -626,3 +626,31 @@ describe("/api/users", () => {
     });
   });
 });
+
+describe('/api/comments/:comment_id', () => {
+  describe('delete request', () => {
+    test('should delete the comment given an id and return not content', () => {
+      return request(app)
+      .delete('/api/comments/1')
+      .expect(204)
+    });
+
+    test('if given an id that does not exist, give error', () => {
+      return request(app)
+      .delete('/api/comments/15')
+      .expect(404)
+      .then(({body}) =>{
+        expect(body.msg).toBe('No comment with given id')
+      })
+    });
+
+    test('if given an id that does not exist, give error', () => {
+      return request(app)
+      .delete('/api/comments/hello')
+      .expect(400)
+      .then(({body}) =>{
+        expect(body.msg).toBe('Invalid parameter')
+      })
+    });
+  });
+});
