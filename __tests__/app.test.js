@@ -62,7 +62,7 @@ describe("/api/reviews", () => {
               created_at: expect.any(String),
               votes: expect.any(Number),
               designer: expect.any(String),
-              comment_count: expect.any(String),
+              comment_count: expect.any(Number),
             });
           });
 
@@ -77,6 +77,155 @@ describe("/api/reviews", () => {
         .then(({ body }) => {
           expect(body.msg).toBe("Route not found");
         });
+    });
+
+
+    describe("queries", () => {
+      test("accepts category query", () => {
+        return request(app)
+          .get("/api/reviews?category=dexterity")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.reviews).toBeInstanceOf(Array);
+            expect(body.reviews).toHaveLength(1);
+
+            expect(body.reviews[0]).toMatchObject({
+              category: "dexterity",
+              comment_count: 3,
+              created_at: "2021-01-18T10:01:41.251Z",
+              designer: "Leslie Scott",
+              owner: "philippaclaire9",
+              review_id: 2,
+              review_img_url:
+                "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+              title: "Jenga",
+              votes: 5,
+            });
+
+            expect(body.reviews).toBeSortedBy("created_at", {
+              descending: true,
+            });
+          });
+          
+      });
+
+      test("accepts sort_by query", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=votes")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.reviews).toBeInstanceOf(Array);
+            expect(body.reviews).toHaveLength(13);
+
+            body.reviews.forEach((review) => {
+              expect(review).toMatchObject({
+                owner: expect.any(String),
+                title: expect.any(String),
+                review_id: expect.any(Number),
+                category: expect.any(String),
+                review_img_url: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                designer: expect.any(String),
+                comment_count: expect.any(Number),
+              });
+            });
+
+            expect(body.reviews).toBeSortedBy("votes", { descending: true });
+          
+          });
+      });
+
+      test("accepts order query", () => {
+        return request(app)
+        .get("/api/reviews?order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews).toBeInstanceOf(Array);
+          expect(body.reviews).toHaveLength(13);
+
+          body.reviews.forEach((review) => {
+            expect(review).toMatchObject({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: expect.any(String),
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              designer: expect.any(String),
+              comment_count: expect.any(Number),
+            });
+          });
+
+          expect(body.reviews).toBeSortedBy("created_at", { ascending: true });
+        
+        });
+      });
+
+      test("all queries work together", () => {
+        return request(app)
+        .get("/api/reviews?order=asc&sort_by=title&category=social deduction")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews).toBeInstanceOf(Array);
+          expect(body.reviews).toHaveLength(11);
+
+          body.reviews.forEach((review) => {
+            expect(review).toMatchObject({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: expect.any(String),
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              designer: expect.any(String),
+              comment_count: expect.any(Number),
+            });
+          });
+
+          expect(body.reviews).toBeSortedBy("title", { ascending: true });
+        
+        });
+      });
+
+      test('if invalid sort input given, return error', () => {
+        return request(app)
+        .get("/api/reviews?sort_by=hello")
+        .expect(400)
+        .then(({body}) =>{
+          expect(body.msg).toBe('Invalid sort query')
+        })
+      });
+
+      test('if invalid order input given, return error', () => {
+        return request(app)
+        .get("/api/reviews?order=hello")
+        .expect(400)
+        .then(({body}) =>{
+          expect(body.msg).toBe('Invalid order query')
+        })
+      });
+
+      test('if invalid order input given, return error', () => {
+        return request(app)
+        .get("/api/reviews?category=hello")
+        .expect(400)
+        .then(({body}) =>{
+          expect(body.msg).toBe('Given category does not exist')
+        })
+      });
+
+      test('if invalid query is given, return error', () => {
+        return request(app)
+        .get("/api/reviews?name=hello")
+        .expect(400)
+        .then(({body}) =>{
+          expect(body.msg).toBe('Invalid query')
+        })
+      });
+
     });
   });
 });
