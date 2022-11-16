@@ -8,7 +8,8 @@ const {
   postComment,
   patchReview,
   getUsers,
-  getEndpoints
+  getEndpoints,
+  deleteComment,
 } = require("./controllers/games.controllers.js");
 
 const app = express();
@@ -26,6 +27,7 @@ app.patch('/api/reviews/:review_id', patchReview)
 
 app.get('/api/users', getUsers)
 
+app.delete('/api/comments/:comment_id', deleteComment)
 
 app.use((err, req, res, next) => {
     if (err.code === "22P02" ) {

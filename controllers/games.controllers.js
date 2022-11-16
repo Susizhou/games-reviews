@@ -6,6 +6,7 @@ const {
   addComment,
   updateReview,
   fetchUsers,
+  removeComment,
 } = require("../models/games.models");
 
 const { readFile } =  require('fs/promises')
@@ -17,7 +18,8 @@ exports.getCategories = (req, res) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  fetchReviews()
+  const QueryObj = req.query;
+  fetchReviews(QueryObj)
     .then((reviews) => {
       res.status(200).send({ reviews });
     })
@@ -83,6 +85,14 @@ exports.getUsers = (req, res, next) => {
     });
 };
 
+exports.deleteComment = (req, res, next) => {
+  const {comment_id} = req.params;
+  removeComment(comment_id).then(()=>{
+    res.status(204).send()
+  }).catch((err) =>{
+    next(err)
+  })
+}
 
 exports.getEndpoints = (req, res, next) => {
   readFile("/Users/susanazhou/Desktop/northcoders/backend/be-nc-games/endpoints.json")
