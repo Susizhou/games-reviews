@@ -197,13 +197,48 @@ exports.removeComment = (comment_id) => {
 };
 
 exports.fetchUserByUsername = (username) => {
-  return db.query(`
+  return db
+    .query(
+      `
     SELECT * FROM users 
     WHERE username = $1;
-  `,[username]).then((user) =>{
-    if (user.rows.length === 0) {
-      return Promise.reject({status: 404, msg: 'User with username given does not exist'})
-    }
-    return user.rows[0]
-  })
+  `,
+      [username]
+    )
+    .then((user) => {
+      if (user.rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "User with username given does not exist",
+        });
+      }
+      return user.rows[0];
+    });
+};
+
+exports.updateComment = (comment_id, body) => {
+  const { inc_votes } = body;
+
+  if (!inc_votes) {
+    return Promise.reject({
+      status: 400,
+      msg: "Input data format was not correct",
+    });
+  }
+  return db
+    .query(
+      `
+  UPDATE comments 
+  SET votes = votes + $1
+  WHERE comment_id = $2
+  RETURNING *;
+  `,
+      [inc_votes, comment_id]
+    )
+    .then((comment) => {
+      if (comment.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "No comment with given id" });
+      }
+      return comment.rows[0];
+    });
 };

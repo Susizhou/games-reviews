@@ -8,6 +8,7 @@ const {
   fetchUsers,
   removeComment,
   fetchUserByUsername,
+  updateComment,
 } = require("../models/games.models");
 
 const { readFile } = require("fs/promises");
@@ -113,3 +114,14 @@ exports.getUserbyUsername = (req, res, next) => {
     next(err)
   });
 };
+
+exports.patchComment = (req, res, next ) =>{
+  const {comment_id} = req.params;
+  const body = req.body;
+
+  updateComment(comment_id, body).then((comment) =>{
+    res.status(201).send({comment})
+  }).catch((err) =>{
+    next(err)
+  })
+}
