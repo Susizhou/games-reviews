@@ -31,7 +31,7 @@
       ]
     }
   },
-  "GET /api/review/:review_id": {
+  "GET /api/reviews/:review_id": {
     "description": "serves an object with the review by the given review_id",
     "queries": [],
     "exampleResponse": {
@@ -70,7 +70,7 @@
     }
   },
 
-  "GET /api/review/:review_id/comments": {
+  "GET /api/reviews/:review_id/comments": {
     "description": "serves an array of objects with the comments of the review with review_id given",
     "queries": [],
     "exampleResponse": [
@@ -101,7 +101,7 @@
     ]
   },
 
-  "POST /api/review/:review_id/comments": {
+  "POST /api/reviews/:review_id/comments": {
     "description": "adds a comment to the database about the review of review_id and responds with the added comment information",
     "queries": [],
     "exampleResponse": {
