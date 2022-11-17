@@ -9,6 +9,7 @@ const {
   removeComment,
   fetchUserByUsername,
   addReview,
+  updateComment,
 } = require("../models/games.models");
 
 const { readFile } = require("fs/promises");
@@ -120,6 +121,16 @@ exports.postReview = (req, res, next) =>{
   const body = req.body
   addReview(body).then((review) =>{
     res.status(201).send({review})
+  }).catch((err) =>{
+    next(err)
+  })
+}
+exports.patchComment = (req, res, next ) =>{
+  const {comment_id} = req.params;
+  const body = req.body;
+
+  updateComment(comment_id, body).then((comment) =>{
+    res.status(201).send({comment})
   }).catch((err) =>{
     next(err)
   })
