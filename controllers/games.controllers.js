@@ -7,9 +7,10 @@ const {
   updateReview,
   fetchUsers,
   removeComment,
+  fetchUserByUsername,
 } = require("../models/games.models");
 
-const { readFile } =  require('fs/promises')
+const { readFile } = require("fs/promises");
 
 exports.getCategories = (req, res) => {
   fetchCategories().then((categories) => {
@@ -86,17 +87,29 @@ exports.getUsers = (req, res, next) => {
 };
 
 exports.deleteComment = (req, res, next) => {
-  const {comment_id} = req.params;
-  removeComment(comment_id).then(()=>{
-    res.status(204).send()
-  }).catch((err) =>{
-    next(err)
-  })
-}
+  const { comment_id } = req.params;
+  removeComment(comment_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
 
 exports.getEndpoints = (req, res, next) => {
-  readFile("/Users/susanazhou/Desktop/northcoders/backend/be-nc-games/endpoints.json")
-    .then((endpoints) => {
-       res.send({endpoints: JSON.parse(endpoints)}) 
-    })
+  readFile(
+    "/Users/susanazhou/Desktop/northcoders/backend/be-nc-games/endpoints.json"
+  ).then((endpoints) => {
+    res.send({ endpoints: JSON.parse(endpoints) });
+  });
+};
+
+exports.getUserbyUsername = (req, res, next) => {
+  const { username } = req.params;
+  fetchUserByUsername(username).then((user) => {
+    res.status(200).send({ user });
+  }).catch((err) =>{
+    next(err)
+  });
 };

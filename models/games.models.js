@@ -7,60 +7,81 @@ exports.fetchCategories = () => {
 };
 
 exports.fetchReviews = (queryObj) => {
-    if (Object.keys(queryObj).length !== 0) {
-      const possQuery = ["order", "sort_by", "category"];
-  
-      const isValidQuery = Object.keys(queryObj).every((key) => possQuery.includes(key));
-      if (!isValidQuery) {
-        return Promise.reject({ status: 400, msg: "Invalid query" });
-      }
-    }
-  
-    let { order, sort_by, category } = queryObj;
-    let queryStr = "SELECT owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer, CAST(COUNT(comment_id) AS INT) AS comment_count FROM reviews\
-    LEFT JOIN comments ON comments.review_id = reviews.review_id"
-  
-    if (!["owner", "title", "review_id", "category", "created_at", 'votes', "designer", "comment_count", undefined].includes(sort_by)) {
-      return Promise.reject({ status: 400, msg: "Invalid sort query" });
-    }
-  
-    if (!["ASC", "DESC", 'asc', 'desc', undefined].includes(order)) {
-      return Promise.reject({ status: 400, msg: "Invalid order query" });
-    }
+  if (Object.keys(queryObj).length !== 0) {
+    const possQuery = ["order", "sort_by", "category"];
 
-    if (!['euro game', 'social deduction', 'dexterity', "children's games", undefined].includes(category)){
-        return Promise.reject({status:400, msg: 'Given category does not exist'})
+    const isValidQuery = Object.keys(queryObj).every((key) =>
+      possQuery.includes(key)
+    );
+    if (!isValidQuery) {
+      return Promise.reject({ status: 400, msg: "Invalid query" });
     }
-  
-    const infoArray = []
-    if (category !== undefined) {
-      queryStr += ` WHERE category = $1`
-      infoArray.push(category)
+  }
+
+  let { order, sort_by, category } = queryObj;
+  let queryStr =
+    "SELECT owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer, CAST(COUNT(comment_id) AS INT) AS comment_count FROM reviews\
+    LEFT JOIN comments ON comments.review_id = reviews.review_id";
+
+  if (
+    ![
+      "owner",
+      "title",
+      "review_id",
+      "category",
+      "created_at",
+      "votes",
+      "designer",
+      "comment_count",
+      undefined,
+    ].includes(sort_by)
+  ) {
+    return Promise.reject({ status: 400, msg: "Invalid sort query" });
+  }
+
+  if (!["ASC", "DESC", "asc", "desc", undefined].includes(order)) {
+    return Promise.reject({ status: 400, msg: "Invalid order query" });
+  }
+
+  if (
+    ![
+      "euro game",
+      "social deduction",
+      "dexterity",
+      "children's games",
+      undefined,
+    ].includes(category)
+  ) {
+    return Promise.reject({
+      status: 400,
+      msg: "Given category does not exist",
+    });
+  }
+
+  const infoArray = [];
+  if (category !== undefined) {
+    queryStr += ` WHERE category = $1`;
+    infoArray.push(category);
+  }
+
+  queryStr += " GROUP BY reviews.review_id";
+
+  if (sort_by) {
+    if (["review_id", "created_at", "votes"].includes(sort_by)) {
+      sort_by = "reviews." + sort_by;
     }
-  
-    queryStr += " GROUP BY reviews.review_id"
-  
-    if (sort_by) {
-        if (["review_id", "created_at", 'votes' ].includes(sort_by)){
-            sort_by = 'reviews.' + sort_by
-        }
-      queryStr += ` ORDER BY ${sort_by} `
-      queryStr += order ? order.toUpperCase() : 'DESC' 
-    }
-    else{
-      queryStr += ' ORDER BY created_at '
-      queryStr += order ? order.toUpperCase() : 'DESC' 
-    }
-  
-    queryStr += ';'
-    return db
-      .query(
-        queryStr, infoArray
-      )
-      .then((reviews) => {
-        return reviews.rows;
-      });
-  };
+    queryStr += ` ORDER BY ${sort_by} `;
+    queryStr += order ? order.toUpperCase() : "DESC";
+  } else {
+    queryStr += " ORDER BY created_at ";
+    queryStr += order ? order.toUpperCase() : "DESC";
+  }
+
+  queryStr += ";";
+  return db.query(queryStr, infoArray).then((reviews) => {
+    return reviews.rows;
+  });
+};
 
 exports.fetchReviewsByID = (review_id) => {
   return db
@@ -130,8 +151,9 @@ exports.updateReview = (review_id, body) => {
       msg: "Input data format was not correct",
     });
   }
-  return this.fetchReviewsByID(review_id).then(()=>{
-    return db.query(
+  return this.fetchReviewsByID(review_id)
+    .then(() => {
+      return db.query(
         `
         UPDATE reviews 
         SET votes = votes + $1
@@ -139,28 +161,49 @@ exports.updateReview = (review_id, body) => {
         RETURNING *;
         `,
         [inc_votes, review_id]
-      )
-  }).then((review)=>{
-    return review.rows[0]
-  });
+      );
+    })
+    .then((review) => {
+      return review.rows[0];
+    });
 };
 
-
-exports.fetchUsers = ()=>{
-    return db.query(`
+exports.fetchUsers = () => {
+  return db
+    .query(
+      `
     SELECT * FROM users;
-    `).then((users)=>{
-        return users.rows
-    })
-}
+    `
+    )
+    .then((users) => {
+      return users.rows;
+    });
+};
 
-exports.removeComment = (comment_id) =>{
-    return db.query(`
+exports.removeComment = (comment_id) => {
+  return db
+    .query(
+      `
     DELETE FROM comments WHERE comment_id = $1 
-    RETURNING *;`, [comment_id]).then((comment)=>{
-        if (comment.rows.length === 0) {
-            return Promise.reject({status:404, msg: 'No comment with given id'})
-        }
-        return comment
-    })
-}
+    RETURNING *;`,
+      [comment_id]
+    )
+    .then((comment) => {
+      if (comment.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "No comment with given id" });
+      }
+      return comment;
+    });
+};
+
+exports.fetchUserByUsername = (username) => {
+  return db.query(`
+    SELECT * FROM users 
+    WHERE username = $1;
+  `,[username]).then((user) =>{
+    if (user.rows.length === 0) {
+      return Promise.reject({status: 404, msg: 'User with username given does not exist'})
+    }
+    return user.rows[0]
+  })
+};

@@ -3,7 +3,7 @@ const app = require("../app.js");
 const data = require("../db/data/test-data/index.js");
 const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed.js");
-const endPoints = require('../endpoints.json')
+const endPoints = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(data);
@@ -604,30 +604,28 @@ describe("/api/users", () => {
     });
   });
 });
-describe('/api/comments/:comment_id', () => {
-  describe('delete request', () => {
-    test('should delete the comment given an id and return not content', () => {
-      return request(app)
-      .delete('/api/comments/1')
-      .expect(204)
+describe("/api/comments/:comment_id", () => {
+  describe("delete request", () => {
+    test("should delete the comment given an id and return not content", () => {
+      return request(app).delete("/api/comments/1").expect(204);
     });
 
-    test('if given an id that does not exist, give error', () => {
+    test("if given an id that does not exist, give error", () => {
       return request(app)
-      .delete('/api/comments/15')
-      .expect(404)
-      .then(({body}) =>{
-        expect(body.msg).toBe('No comment with given id')
-      })
+        .delete("/api/comments/15")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("No comment with given id");
+        });
     });
 
-    test('if given an id that does not exist, give error', () => {
+    test("if given an id that does not exist, give error", () => {
       return request(app)
-      .delete('/api/comments/hello')
-      .expect(400)
-      .then(({body}) =>{
-        expect(body.msg).toBe('Invalid parameter')
-      })
+        .delete("/api/comments/hello")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid parameter");
+        });
     });
   });
 });
@@ -638,6 +636,35 @@ describe("/api", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        expect(body.endpoints).toEqual(endPoints)});
+        expect(body.endpoints).toEqual(endPoints);
+      });
   });
+});
+
+describe("/api/users/username", () => {
+  describe("get request", () => {
+    test("test that it returns the user with the given username", () => {
+      return request(app)
+        .get("/api/users/bainesface")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.user).toBeInstanceOf(Object);
+          expect(body.user).toMatchObject({
+            username: "bainesface",
+            name: "sarah",
+            avatar_url:
+              "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+          });
+        });
+    });
+
+    test('if invalid username is given, throw error', () => {
+      return request(app)
+        .get("/api/users/1hello")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('User with username given does not exist')
+    });
+  });
+});
 });
