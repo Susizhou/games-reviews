@@ -9,6 +9,8 @@ const {
   removeComment,
 } = require("../models/games.models");
 
+const { readFile } =  require('fs/promises')
+
 exports.getCategories = (req, res) => {
   fetchCategories().then((categories) => {
     res.status(200).send({ categories });
@@ -91,3 +93,10 @@ exports.deleteComment = (req, res, next) => {
     next(err)
   })
 }
+
+exports.getEndpoints = (req, res, next) => {
+  readFile("/Users/susanazhou/Desktop/northcoders/backend/be-nc-games/endpoints.json")
+    .then((endpoints) => {
+       res.send({endpoints: JSON.parse(endpoints)}) 
+    })
+};

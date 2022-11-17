@@ -3,6 +3,7 @@ const app = require("../app.js");
 const data = require("../db/data/test-data/index.js");
 const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed.js");
+const endPoints = require('../endpoints.json')
 
 beforeEach(() => {
   return seed(data);
@@ -603,7 +604,6 @@ describe("/api/users", () => {
     });
   });
 });
-
 describe('/api/comments/:comment_id', () => {
   describe('delete request', () => {
     test('should delete the comment given an id and return not content', () => {
@@ -629,5 +629,15 @@ describe('/api/comments/:comment_id', () => {
         expect(body.msg).toBe('Invalid parameter')
       })
     });
+  });
+});
+
+describe("/api", () => {
+  test("should return the json file", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.endpoints).toEqual(endPoints)});
   });
 });
