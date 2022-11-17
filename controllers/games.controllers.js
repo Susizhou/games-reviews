@@ -8,6 +8,7 @@ const {
   fetchUsers,
   removeComment,
   fetchUserByUsername,
+  addReview,
 } = require("../models/games.models");
 
 const { readFile } = require("fs/promises");
@@ -113,3 +114,13 @@ exports.getUserbyUsername = (req, res, next) => {
     next(err)
   });
 };
+
+
+exports.postReview = (req, res, next) =>{
+  const body = req.body
+  addReview(body).then((review) =>{
+    res.status(201).send({review})
+  }).catch((err) =>{
+    next(err)
+  })
+}

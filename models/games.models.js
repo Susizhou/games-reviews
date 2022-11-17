@@ -197,13 +197,56 @@ exports.removeComment = (comment_id) => {
 };
 
 exports.fetchUserByUsername = (username) => {
-  return db.query(`
+  return db
+    .query(
+      `
     SELECT * FROM users 
     WHERE username = $1;
-  `,[username]).then((user) =>{
-    if (user.rows.length === 0) {
-      return Promise.reject({status: 404, msg: 'User with username given does not exist'})
-    }
-    return user.rows[0]
-  })
+  `,
+      [username]
+    )
+    .then((user) => {
+      if (user.rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "User with username given does not exist",
+        });
+      }
+      return user.rows[0];
+    });
 };
+
+exports.addReview = (body) => {
+  const { title, category, designer, owner, review_body } = body;
+
+  if (!title || !category || !designer || !owner || !review_body) {
+    return Promise.reject({
+      status: 400,
+      msg: "Input data format was not correct",
+    });
+  }
+  const created_at = new Date();
+
+  return db
+    .query(
+      `
+    INSERT INTO reviews 
+    (title, category, designer, owner, review_body, review_img_url, created_at, votes)
+    VALUES
+    ($1, $2, $3, $4, $5, $6, $7, $8)
+    RETURNING *;
+  `,[title, category, designer, owner, review_body, "url", created_at, 0]
+    ).then((review) => {
+      const {review_id} = review.rows[0]
+
+      return db.query(`
+        SELECT reviews.* , CAST(COUNT(comment_id) AS INT) AS comment_count FROM reviews
+        LEFT JOIN comments ON comments.review_id = reviews.review_id
+        WHERE reviews.review_id = $1
+        GROUP BY reviews.review_id;
+      `, [review_id])
+    }).then((review)=>{
+      return review.rows[0]
+    });
+};
+
