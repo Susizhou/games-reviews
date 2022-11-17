@@ -8,6 +8,7 @@ const {
   fetchUsers,
   removeComment,
   fetchUserByUsername,
+  addReview,
   updateComment,
 } = require("../models/games.models");
 
@@ -115,6 +116,15 @@ exports.getUserbyUsername = (req, res, next) => {
   });
 };
 
+
+exports.postReview = (req, res, next) =>{
+  const body = req.body
+  addReview(body).then((review) =>{
+    res.status(201).send({review})
+  }).catch((err) =>{
+    next(err)
+  })
+}
 exports.patchComment = (req, res, next ) =>{
   const {comment_id} = req.params;
   const body = req.body;

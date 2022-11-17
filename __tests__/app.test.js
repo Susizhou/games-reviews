@@ -206,6 +206,122 @@ describe("/api/reviews", () => {
         });
     });
   });
+
+  describe("post request", () => {
+    test("should post a new review with all properties", () => {
+      const newReview = {
+        owner: "bainesface",
+        title: "Catan",
+        review_body: "Great Stuff",
+        designer: "Susana",
+        category: "euro game",
+      };
+
+      return request(app)
+        .post("/api/reviews")
+        .send(newReview)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.review).toMatchObject({
+            review_id: 14,
+            title: "Catan",
+            category: "euro game",
+            designer: "Susana",
+            owner: "bainesface",
+            review_body: "Great Stuff",
+            review_img_url: "url",
+            created_at: expect.any(String),
+            votes: 0,
+            comment_count: 0,
+          });
+        });
+    });
+
+    test("should return 400 if theres missing keys in the input body", () => {
+      const newReview = {
+        owner: "bainesface",
+        title: "Catan",
+        review_body: "Great Stuff",
+        designer: "Susana",
+      };
+
+      return request(app)
+        .post("/api/reviews")
+        .send(newReview)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Input data format was not correct");
+        });
+    });
+
+    test("irrelevant keys from the input body are ignored", () => {
+      const newReview = {
+        owner: "bainesface",
+        title: "Catan",
+        review_body: "Great Stuff",
+        designer: "Susana",
+        category: "euro game",
+        hello: 'new'
+      };
+
+      return request(app)
+        .post("/api/reviews")
+        .send(newReview)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.review).toMatchObject({
+            review_id: 14,
+            title: "Catan",
+            category: "euro game",
+            designer: "Susana",
+            owner: "bainesface",
+            review_body: "Great Stuff",
+            review_img_url: "url",
+            created_at: expect.any(String),
+            votes: 0,
+            comment_count: 0,
+          });
+        });
+    });
+
+    test("if the owner is not an existent user, give error", () => {
+      const newReview = {
+        owner: "me",
+        title: "Catan",
+        review_body: "Great Stuff",
+        designer: "Susana",
+        category: "euro game",
+        hello: 'new'
+      };
+
+      return request(app)
+        .post("/api/reviews")
+        .send(newReview)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe( "Bad request: Referenced parameter does not exist");
+        });
+    });
+
+    test("if the ocategory given does not exist, give error", () => {
+      const newReview = {
+        owner: "me",
+        title: "Catan",
+        review_body: "Great Stuff",
+        designer: "Susana",
+        category: "game",
+      };
+
+      return request(app)
+        .post("/api/reviews")
+        .send(newReview)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe( "Bad request: Referenced parameter does not exist");
+        });
+    });
+
+  });
 });
 
 describe("/api/reviews/:review_id", () => {
@@ -729,13 +845,13 @@ describe("/api/users/username", () => {
         });
     });
 
-    test('if invalid username is given, throw error', () => {
+    test("if invalid username is given, throw error", () => {
       return request(app)
         .get("/api/users/1hello")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe('User with username given does not exist')
+          expect(body.msg).toBe("User with username given does not exist");
+        });
     });
   });
-});
 });
