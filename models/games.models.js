@@ -27,9 +27,8 @@ exports.fetchReviews = (queryObj) => {
     if (!["ASC", "DESC", 'asc', 'desc', undefined].includes(order)) {
       return Promise.reject({ status: 400, msg: "Invalid order query" });
     }
-    //console.log(['euro game', 'social deduction', 'dexterity', "children's games"].includes("children's games"))
+
     if (!['euro game', 'social deduction', 'dexterity', "children's games", undefined].includes(category)){
-        console.log('line 32')
         return Promise.reject({status:400, msg: 'Given category does not exist'})
     }
   
