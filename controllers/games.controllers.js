@@ -44,7 +44,9 @@ exports.getReviews_byID = (req, res, next) => {
 
 exports.getCommentsByReview = (req, res, next) => {
   const { review_id } = req.params;
-  fetchCommentsByReview(review_id)
+  const queryObj = req.query;
+
+  fetchCommentsByReview(review_id, queryObj)
     .then((comments) => {
       res.status(200).send({ comments });
     })

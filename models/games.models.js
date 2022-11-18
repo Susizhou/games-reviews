@@ -117,13 +117,38 @@ exports.fetchReviewsByID = (review_id) => {
     });
 };
 
-exports.fetchCommentsByReview = (review_id) => {
+exports.fetchCommentsByReview = (review_id, queryObj) => {
   return this.fetchReviewsByID(review_id)
     .then(() => {
-      return db.query(
-        "SELECT * FROM comments\
-        WHERE review_id = $1\
-        ORDER BY CREATED_AT DESC",
+      if (Object.keys(queryObj).length !== 0) {
+        const possQuery = ['limit', 'p'];
+    
+        const isValidQuery = Object.keys(queryObj).every((key) =>
+          possQuery.includes(key)
+        );
+        if (!isValidQuery) {
+          return Promise.reject({ status: 400, msg: "Invalid query" });
+        }
+      }
+      const {limit, p} = queryObj
+
+      if (!Number.isInteger(+limit) && limit !== undefined){
+        return Promise.reject({status: 400, msg: 'limit queries need to be of type int'})
+      }
+    
+      if (!Number.isInteger(+p) && p !== undefined){
+        return Promise.reject({status: 400, msg: 'p queries need to be of type int'})
+      }
+
+      let queryStr = "SELECT * FROM comments\
+      WHERE review_id = $1\
+      ORDER BY CREATED_AT DESC"
+
+      queryStr += " LIMIT ";
+      queryStr += limit ? `${limit}` : 10
+      queryStr += p ? ` OFFSET ${p} ` : ''
+      
+      return db.query(queryStr,
         [review_id]
       );
     })
