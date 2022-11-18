@@ -289,11 +289,29 @@ describe("/api/reviews", () => {
 
     test("if invalid query is given, return error", () => {
       return request(app)
-        .get("/api/reviews?name=hello")
+        .get("/api/reviews?name=asc")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Invalid query");
         });
+    });
+
+    test('should give error if the p query input is not int', () => {
+      return request(app)
+      .get("/api/reviews?limit=susana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('limit queries need to be of type int');
+      });
+    });
+
+    test('should give error if the p query input is not int', () => {
+      return request(app)
+      .get("/api/reviews?p=susana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('p queries need to be of type int');
+      });
     });
   });
 

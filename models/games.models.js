@@ -54,6 +54,14 @@ exports.fetchReviews = (queryObj) => {
     });
   }
 
+  if (!Number.isInteger(+limit) && limit !== undefined){
+    return Promise.reject({status: 400, msg: 'limit queries need to be of type int'})
+  }
+
+  if (!Number.isInteger(+p) && p !== undefined){
+    return Promise.reject({status: 400, msg: 'p queries need to be of type int'})
+  }
+
   let queryStr =
     "SELECT owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer, CAST(COUNT(comment_id) AS INT) AS comment_count FROM reviews\
     LEFT JOIN comments ON comments.review_id = reviews.review_id";
