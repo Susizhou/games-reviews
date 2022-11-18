@@ -51,7 +51,7 @@ describe("/api/reviews", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.reviews).toBeInstanceOf(Array);
-          expect(body.reviews).toHaveLength(13);
+          expect(body.reviews).toHaveLength(10);
 
           body.reviews.forEach((review) => {
             expect(review).toMatchObject({
@@ -67,6 +67,7 @@ describe("/api/reviews", () => {
             });
           });
 
+          expect(body.total_count).toBe(13)
           expect(body.reviews).toBeSortedBy("created_at", { descending: true });
         });
     });
@@ -103,6 +104,8 @@ describe("/api/reviews", () => {
               });
             });
 
+            expect(body.total_count).toBe(1)
+
             expect(body.reviews).toBeSortedBy("created_at", {
               descending: true,
             });
@@ -126,9 +129,11 @@ describe("/api/reviews", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.reviews).toBeInstanceOf(Array);
-          expect(body.reviews).toHaveLength(13);
-
+          expect(body.reviews).toHaveLength(10);
           expect(body.reviews).toBeSortedBy("votes", { descending: true });
+
+          expect(body.total_count).toBe(13)
+
         });
     });
 
@@ -138,19 +143,101 @@ describe("/api/reviews", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.reviews).toBeInstanceOf(Array);
-          expect(body.reviews).toHaveLength(13);
+          expect(body.reviews).toHaveLength(10);
 
           expect(body.reviews).toBeSortedBy("created_at", { ascending: true });
+        });
+    });
+    test("p and limit query work", () => {
+      return request(app)
+        .get("/api/reviews?limit=2")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews).toBeInstanceOf(Array);
+          expect(body.reviews).toHaveLength(2);
+
+          expect(body.reviews).toEqual([
+            {
+              owner: "mallionaire",
+              title: "Mollit elit qui incididunt veniam occaecat cupidatat",
+              review_id: 7,
+              category: "social deduction",
+              review_img_url:
+                "https://images.pexels.com/photos/278888/pexels-photo-278888.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+              created_at: "2021-01-25T11:16:54.963Z",
+              votes: 9,
+              designer: "Avery Wunzboogerz",
+              comment_count: 0,
+            },
+            {
+              owner: "mallionaire",
+              title: "Dolor reprehenderit",
+              review_id: 4,
+              category: "social deduction",
+              review_img_url:
+                "https://images.pexels.com/photos/278918/pexels-photo-278918.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+              created_at: "2021-01-22T11:35:50.936Z",
+              votes: 7,
+              designer: "Gamey McGameface",
+              comment_count: 0,
+            },
+          ]);
+          expect(body.reviews).toBeSortedBy("created_at", { descending: true });
+
+          expect(body.total_count).toBe(13)
+
+        });
+    });
+
+    test("limit query works", () => {
+      return request(app)
+        .get("/api/reviews?p=1&&limit=2")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews).toBeInstanceOf(Array);
+          expect(body.reviews).toHaveLength(2);
+
+          expect(body.reviews).toEqual([
+            {
+              owner: "mallionaire",
+              title: "Dolor reprehenderit",
+              review_id: 4,
+              category: "social deduction",
+              review_img_url:
+                "https://images.pexels.com/photos/278918/pexels-photo-278918.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+              created_at: "2021-01-22T11:35:50.936Z",
+              votes: 7,
+              designer: "Gamey McGameface",
+              comment_count: 0,
+            },
+            {
+              owner: "mallionaire",
+              title: "Scythe; you're gonna need a bigger table!",
+              review_id: 12,
+              category: "social deduction",
+              review_img_url:
+                "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+              created_at: "2021-01-22T10:37:04.839Z",
+              votes: 100,
+              designer: "Jamey Stegmaier",
+              comment_count: 0,
+            },
+          ]);
+
+          expect(body.reviews).toBeSortedBy("created_at", { descending: true });
+
+          expect(body.total_count).toBe(13)
+
         });
     });
 
     test("all queries work together", () => {
       return request(app)
-        .get("/api/reviews?order=asc&sort_by=title&category=social deduction")
+        .get("/api/reviews?order=asc&sort_by=title&category=social deduction&limit=5")
         .expect(200)
         .then(({ body }) => {
           expect(body.reviews).toBeInstanceOf(Array);
-          expect(body.reviews).toHaveLength(11);
+          expect(body.reviews).toHaveLength(5);
 
           body.reviews.forEach((review) => {
             expect(review).toMatchObject({
@@ -167,6 +254,9 @@ describe("/api/reviews", () => {
           });
 
           expect(body.reviews).toBeSortedBy("title", { ascending: true });
+
+          expect(body.total_count).toBe(11)
+
         });
     });
 
@@ -199,11 +289,29 @@ describe("/api/reviews", () => {
 
     test("if invalid query is given, return error", () => {
       return request(app)
-        .get("/api/reviews?name=hello")
+        .get("/api/reviews?name=asc")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Invalid query");
         });
+    });
+
+    test('should give error if the p query input is not int', () => {
+      return request(app)
+      .get("/api/reviews?limit=susana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('limit queries need to be of type int');
+      });
+    });
+
+    test('should give error if the p query input is not int', () => {
+      return request(app)
+      .get("/api/reviews?p=susana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('p queries need to be of type int');
+      });
     });
   });
 
@@ -261,7 +369,7 @@ describe("/api/reviews", () => {
         review_body: "Great Stuff",
         designer: "Susana",
         category: "euro game",
-        hello: 'new'
+        hello: "new",
       };
 
       return request(app)
@@ -291,7 +399,7 @@ describe("/api/reviews", () => {
         review_body: "Great Stuff",
         designer: "Susana",
         category: "euro game",
-        hello: 'new'
+        hello: "new",
       };
 
       return request(app)
@@ -299,7 +407,9 @@ describe("/api/reviews", () => {
         .send(newReview)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe( "Bad request: Referenced parameter does not exist");
+          expect(body.msg).toBe(
+            "Bad request: Referenced parameter does not exist"
+          );
         });
     });
 
@@ -317,10 +427,11 @@ describe("/api/reviews", () => {
         .send(newReview)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe( "Bad request: Referenced parameter does not exist");
+          expect(body.msg).toBe(
+            "Bad request: Referenced parameter does not exist"
+          );
         });
     });
-
   });
 });
 
@@ -745,58 +856,58 @@ describe("/api/comments/:comment_id", () => {
     });
   });
 
-  describe('patch request', () => {
-    test('should add a vote in the given id', () => {
+  describe("patch request", () => {
+    test("should add a vote in the given id", () => {
       const voteUpdate = {
-        inc_votes: 1
-      }
+        inc_votes: 1,
+      };
       return request(app)
-      .patch('/api/comments/1')
-      .send(voteUpdate)
-      .expect(201)
-      .then(({body })=>{
-        expect(body.comment).toMatchObject({
-          comment_id: 1,
-          body: 'I loved this game too!',
-          review_id: 2,
-          author: 'bainesface',
-          votes: 17,
-          created_at: '2017-11-22T12:43:33.389Z'
-        })
-      })
+        .patch("/api/comments/1")
+        .send(voteUpdate)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment).toMatchObject({
+            comment_id: 1,
+            body: "I loved this game too!",
+            review_id: 2,
+            author: "bainesface",
+            votes: 17,
+            created_at: "2017-11-22T12:43:33.389Z",
+          });
+        });
     });
 
-    test('should reduce a vote in the given id', () => {
+    test("should reduce a vote in the given id", () => {
       const voteUpdate = {
-        inc_votes: -2
-      }
+        inc_votes: -2,
+      };
       return request(app)
-      .patch('/api/comments/1')
-      .send(voteUpdate)
-      .expect(201)
-      .then(({body })=>{
-        expect(body.comment).toMatchObject({
-          comment_id: 1,
-          body: 'I loved this game too!',
-          review_id: 2,
-          author: 'bainesface',
-          votes: 14,
-          created_at: '2017-11-22T12:43:33.389Z'
-        })
-      })
+        .patch("/api/comments/1")
+        .send(voteUpdate)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment).toMatchObject({
+            comment_id: 1,
+            body: "I loved this game too!",
+            review_id: 2,
+            author: "bainesface",
+            votes: 14,
+            created_at: "2017-11-22T12:43:33.389Z",
+          });
+        });
     });
 
-    test('if the required body parameters are given, give an error', () => {
+    test("if the required body parameters are given, give an error", () => {
       const voteUpdate = {
-        hello: 1
-      }
+        hello: 1,
+      };
       return request(app)
-      .patch('/api/comments/1')
-      .send(voteUpdate)
-      .expect(400)
-      .then(({body })=>{
-        expect(body.msg).toBe("Input data format was not correct")
-      })
+        .patch("/api/comments/1")
+        .send(voteUpdate)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Input data format was not correct");
+        });
     });
 
     test("give error if given id is out of bounds is given", () => {
@@ -812,8 +923,6 @@ describe("/api/comments/:comment_id", () => {
           expect(body.msg).toBe("No comment with given id");
         });
     });
-
-
   });
 });
 

@@ -24,7 +24,7 @@ exports.getReviews = (req, res, next) => {
   const queryObj = req.query;
   fetchReviews(queryObj)
     .then((reviews) => {
-      res.status(200).send({ reviews });
+      res.status(200).send({ reviews: reviews[0],  ...reviews[1].rows[0] });
     })
     .catch((err) => {
       next(err);

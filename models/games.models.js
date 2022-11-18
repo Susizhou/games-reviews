@@ -8,7 +8,7 @@ exports.fetchCategories = () => {
 
 exports.fetchReviews = (queryObj) => {
   if (Object.keys(queryObj).length !== 0) {
-    const possQuery = ["order", "sort_by", "category"];
+    const possQuery = ["order", "sort_by", "category", 'limit', 'p'];
 
     const isValidQuery = Object.keys(queryObj).every((key) =>
       possQuery.includes(key)
@@ -18,11 +18,7 @@ exports.fetchReviews = (queryObj) => {
     }
   }
 
-  let { order, sort_by, category } = queryObj;
-  let queryStr =
-    "SELECT owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer, CAST(COUNT(comment_id) AS INT) AS comment_count FROM reviews\
-    LEFT JOIN comments ON comments.review_id = reviews.review_id";
-
+  let { order, sort_by, category, limit, p } = queryObj;
   if (
     ![
       "owner",
@@ -58,9 +54,23 @@ exports.fetchReviews = (queryObj) => {
     });
   }
 
+  if (!Number.isInteger(+limit) && limit !== undefined){
+    return Promise.reject({status: 400, msg: 'limit queries need to be of type int'})
+  }
+
+  if (!Number.isInteger(+p) && p !== undefined){
+    return Promise.reject({status: 400, msg: 'p queries need to be of type int'})
+  }
+
+  let queryStr =
+    "SELECT owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer, CAST(COUNT(comment_id) AS INT) AS comment_count FROM reviews\
+    LEFT JOIN comments ON comments.review_id = reviews.review_id";
   const infoArray = [];
+  let countStr = "SELECT CAST(COUNT(*) AS INT) AS total_count FROM reviews"
+
   if (category !== undefined) {
     queryStr += ` WHERE category = $1`;
+    countStr += ` WHERE category = $1`;
     infoArray.push(category);
   }
 
@@ -76,11 +86,18 @@ exports.fetchReviews = (queryObj) => {
     queryStr += " ORDER BY created_at ";
     queryStr += order ? order.toUpperCase() : "DESC";
   }
+  queryStr += " LIMIT ";
+  queryStr += limit ? `${limit}` : 10
+  queryStr += p ? ` OFFSET ${p} ` : ''
+  queryStr+= ';'
 
-  queryStr += ";";
-  return db.query(queryStr, infoArray).then((reviews) => {
+  const reviewCount = db.query(countStr, infoArray)
+  
+  const reviewsR =  db.query(queryStr, infoArray).then((reviews) => {
     return reviews.rows;
   });
+
+  return Promise.all([reviewsR, reviewCount])
 };
 
 exports.fetchReviewsByID = (review_id) => {
