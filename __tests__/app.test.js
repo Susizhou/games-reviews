@@ -67,6 +67,7 @@ describe("/api/reviews", () => {
             });
           });
 
+          expect(body.total_count).toBe(13)
           expect(body.reviews).toBeSortedBy("created_at", { descending: true });
         });
     });
@@ -103,6 +104,8 @@ describe("/api/reviews", () => {
               });
             });
 
+            expect(body.total_count).toBe(1)
+
             expect(body.reviews).toBeSortedBy("created_at", {
               descending: true,
             });
@@ -127,8 +130,10 @@ describe("/api/reviews", () => {
         .then(({ body }) => {
           expect(body.reviews).toBeInstanceOf(Array);
           expect(body.reviews).toHaveLength(10);
-
           expect(body.reviews).toBeSortedBy("votes", { descending: true });
+
+          expect(body.total_count).toBe(13)
+
         });
     });
 
@@ -178,6 +183,9 @@ describe("/api/reviews", () => {
             },
           ]);
           expect(body.reviews).toBeSortedBy("created_at", { descending: true });
+
+          expect(body.total_count).toBe(13)
+
         });
     });
 
@@ -217,6 +225,9 @@ describe("/api/reviews", () => {
           ]);
 
           expect(body.reviews).toBeSortedBy("created_at", { descending: true });
+
+          expect(body.total_count).toBe(13)
+
         });
     });
 
@@ -243,6 +254,9 @@ describe("/api/reviews", () => {
           });
 
           expect(body.reviews).toBeSortedBy("title", { ascending: true });
+
+          expect(body.total_count).toBe(11)
+
         });
     });
 
