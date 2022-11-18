@@ -121,198 +121,199 @@ describe("/api/reviews", () => {
             expect(body.reviews).toHaveLength(0);
           });
       });
-    });
-
-    test("accepts sort_by query", () => {
-      return request(app)
-        .get("/api/reviews?sort_by=votes")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.reviews).toBeInstanceOf(Array);
-          expect(body.reviews).toHaveLength(10);
-          expect(body.reviews).toBeSortedBy("votes", { descending: true });
-
-          expect(body.total_count).toBe(13)
-
-        });
-    });
-
-    test("accepts order query", () => {
-      return request(app)
-        .get("/api/reviews?order=asc")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.reviews).toBeInstanceOf(Array);
-          expect(body.reviews).toHaveLength(10);
-
-          expect(body.reviews).toBeSortedBy("created_at", { ascending: true });
-        });
-    });
-    test("p and limit query work", () => {
-      return request(app)
-        .get("/api/reviews?limit=2")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.reviews).toBeInstanceOf(Array);
-          expect(body.reviews).toHaveLength(2);
-
-          expect(body.reviews).toEqual([
-            {
-              owner: "mallionaire",
-              title: "Mollit elit qui incididunt veniam occaecat cupidatat",
-              review_id: 7,
-              category: "social deduction",
-              review_img_url:
-                "https://images.pexels.com/photos/278888/pexels-photo-278888.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-              created_at: "2021-01-25T11:16:54.963Z",
-              votes: 9,
-              designer: "Avery Wunzboogerz",
-              comment_count: 0,
-            },
-            {
-              owner: "mallionaire",
-              title: "Dolor reprehenderit",
-              review_id: 4,
-              category: "social deduction",
-              review_img_url:
-                "https://images.pexels.com/photos/278918/pexels-photo-278918.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-              created_at: "2021-01-22T11:35:50.936Z",
-              votes: 7,
-              designer: "Gamey McGameface",
-              comment_count: 0,
-            },
-          ]);
-          expect(body.reviews).toBeSortedBy("created_at", { descending: true });
-
-          expect(body.total_count).toBe(13)
-
-        });
-    });
-
-    test("limit query works", () => {
-      return request(app)
-        .get("/api/reviews?p=1&&limit=2")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.reviews).toBeInstanceOf(Array);
-          expect(body.reviews).toHaveLength(2);
-
-          expect(body.reviews).toEqual([
-            {
-              owner: "mallionaire",
-              title: "Dolor reprehenderit",
-              review_id: 4,
-              category: "social deduction",
-              review_img_url:
-                "https://images.pexels.com/photos/278918/pexels-photo-278918.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-              created_at: "2021-01-22T11:35:50.936Z",
-              votes: 7,
-              designer: "Gamey McGameface",
-              comment_count: 0,
-            },
-            {
-              owner: "mallionaire",
-              title: "Scythe; you're gonna need a bigger table!",
-              review_id: 12,
-              category: "social deduction",
-              review_img_url:
-                "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
-              created_at: "2021-01-22T10:37:04.839Z",
-              votes: 100,
-              designer: "Jamey Stegmaier",
-              comment_count: 0,
-            },
-          ]);
-
-          expect(body.reviews).toBeSortedBy("created_at", { descending: true });
-
-          expect(body.total_count).toBe(13)
-
-        });
-    });
-
-    test("all queries work together", () => {
-      return request(app)
-        .get("/api/reviews?order=asc&sort_by=title&category=social deduction&limit=5")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.reviews).toBeInstanceOf(Array);
-          expect(body.reviews).toHaveLength(5);
-
-          body.reviews.forEach((review) => {
-            expect(review).toMatchObject({
-              owner: expect.any(String),
-              title: expect.any(String),
-              review_id: expect.any(Number),
-              category: expect.any(String),
-              review_img_url: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              designer: expect.any(String),
-              comment_count: expect.any(Number),
-            });
+      
+      test("accepts sort_by query", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=votes")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.reviews).toBeInstanceOf(Array);
+            expect(body.reviews).toHaveLength(10);
+            expect(body.reviews).toBeSortedBy("votes", { descending: true });
+  
+            expect(body.total_count).toBe(13)
+  
           });
-
-          expect(body.reviews).toBeSortedBy("title", { ascending: true });
-
-          expect(body.total_count).toBe(11)
-
-        });
-    });
-
-    test("if invalid sort input given, return error", () => {
-      return request(app)
-        .get("/api/reviews?sort_by=hello")
+      });
+  
+      test("accepts order query", () => {
+        return request(app)
+          .get("/api/reviews?order=asc")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.reviews).toBeInstanceOf(Array);
+            expect(body.reviews).toHaveLength(10);
+  
+            expect(body.reviews).toBeSortedBy("created_at", { ascending: true });
+          });
+      });
+      test("p and limit query work", () => {
+        return request(app)
+          .get("/api/reviews?limit=2")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.reviews).toBeInstanceOf(Array);
+            expect(body.reviews).toHaveLength(2);
+  
+            expect(body.reviews).toEqual([
+              {
+                owner: "mallionaire",
+                title: "Mollit elit qui incididunt veniam occaecat cupidatat",
+                review_id: 7,
+                category: "social deduction",
+                review_img_url:
+                  "https://images.pexels.com/photos/278888/pexels-photo-278888.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+                created_at: "2021-01-25T11:16:54.963Z",
+                votes: 9,
+                designer: "Avery Wunzboogerz",
+                comment_count: 0,
+              },
+              {
+                owner: "mallionaire",
+                title: "Dolor reprehenderit",
+                review_id: 4,
+                category: "social deduction",
+                review_img_url:
+                  "https://images.pexels.com/photos/278918/pexels-photo-278918.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+                created_at: "2021-01-22T11:35:50.936Z",
+                votes: 7,
+                designer: "Gamey McGameface",
+                comment_count: 0,
+              },
+            ]);
+            expect(body.reviews).toBeSortedBy("created_at", { descending: true });
+  
+            expect(body.total_count).toBe(13)
+  
+          });
+      });
+  
+      test("limit query works", () => {
+        return request(app)
+          .get("/api/reviews?p=1&&limit=2")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.reviews).toBeInstanceOf(Array);
+            expect(body.reviews).toHaveLength(2);
+  
+            expect(body.reviews).toEqual([
+              {
+                owner: "mallionaire",
+                title: "Dolor reprehenderit",
+                review_id: 4,
+                category: "social deduction",
+                review_img_url:
+                  "https://images.pexels.com/photos/278918/pexels-photo-278918.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+                created_at: "2021-01-22T11:35:50.936Z",
+                votes: 7,
+                designer: "Gamey McGameface",
+                comment_count: 0,
+              },
+              {
+                owner: "mallionaire",
+                title: "Scythe; you're gonna need a bigger table!",
+                review_id: 12,
+                category: "social deduction",
+                review_img_url:
+                  "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+                created_at: "2021-01-22T10:37:04.839Z",
+                votes: 100,
+                designer: "Jamey Stegmaier",
+                comment_count: 0,
+              },
+            ]);
+  
+            expect(body.reviews).toBeSortedBy("created_at", { descending: true });
+  
+            expect(body.total_count).toBe(13)
+  
+          });
+      });
+  
+      test("all queries work together", () => {
+        return request(app)
+          .get("/api/reviews?order=asc&sort_by=title&category=social deduction&limit=5")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.reviews).toBeInstanceOf(Array);
+            expect(body.reviews).toHaveLength(5);
+  
+            body.reviews.forEach((review) => {
+              expect(review).toMatchObject({
+                owner: expect.any(String),
+                title: expect.any(String),
+                review_id: expect.any(Number),
+                category: expect.any(String),
+                review_img_url: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                designer: expect.any(String),
+                comment_count: expect.any(Number),
+              });
+            });
+  
+            expect(body.reviews).toBeSortedBy("title", { ascending: true });
+  
+            expect(body.total_count).toBe(11)
+  
+          });
+      });
+  
+      test("if invalid sort input given, return error", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=hello")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Invalid sort query");
+          });
+      });
+  
+      test("if invalid order input given, return error", () => {
+        return request(app)
+          .get("/api/reviews?order=hello")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Invalid order query");
+          });
+      });
+  
+      test("if invalid order input given, return error", () => {
+        return request(app)
+          .get("/api/reviews?category=hello")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Given category does not exist");
+          });
+      });
+  
+      test("if invalid query is given, return error", () => {
+        return request(app)
+          .get("/api/reviews?name=asc")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Invalid query");
+          });
+      });
+  
+      test('should give error if the p query input is not int', () => {
+        return request(app)
+        .get("/api/reviews?limit=susana")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Invalid sort query");
+          expect(body.msg).toBe('limit queries need to be of type int');
         });
-    });
-
-    test("if invalid order input given, return error", () => {
-      return request(app)
-        .get("/api/reviews?order=hello")
+      });
+  
+      test('should give error if the p query input is not int', () => {
+        return request(app)
+        .get("/api/reviews?p=susana")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Invalid order query");
+          expect(body.msg).toBe('p queries need to be of type int');
         });
-    });
-
-    test("if invalid order input given, return error", () => {
-      return request(app)
-        .get("/api/reviews?category=hello")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Given category does not exist");
-        });
-    });
-
-    test("if invalid query is given, return error", () => {
-      return request(app)
-        .get("/api/reviews?name=asc")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Invalid query");
-        });
-    });
-
-    test('should give error if the p query input is not int', () => {
-      return request(app)
-      .get("/api/reviews?limit=susana")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe('limit queries need to be of type int');
       });
     });
 
-    test('should give error if the p query input is not int', () => {
-      return request(app)
-      .get("/api/reviews?p=susana")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe('p queries need to be of type int');
-      });
-    });
   });
 
   describe("post request", () => {
