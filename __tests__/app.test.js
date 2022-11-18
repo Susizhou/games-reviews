@@ -67,7 +67,7 @@ describe("/api/reviews", () => {
             });
           });
 
-          expect(body.total_count).toBe(13)
+          expect(body.total_count).toBe(13);
           expect(body.reviews).toBeSortedBy("created_at", { descending: true });
         });
     });
@@ -104,7 +104,7 @@ describe("/api/reviews", () => {
               });
             });
 
-            expect(body.total_count).toBe(1)
+            expect(body.total_count).toBe(1);
 
             expect(body.reviews).toBeSortedBy("created_at", {
               descending: true,
@@ -121,7 +121,7 @@ describe("/api/reviews", () => {
             expect(body.reviews).toHaveLength(0);
           });
       });
-      
+
       test("accepts sort_by query", () => {
         return request(app)
           .get("/api/reviews?sort_by=votes")
@@ -130,12 +130,11 @@ describe("/api/reviews", () => {
             expect(body.reviews).toBeInstanceOf(Array);
             expect(body.reviews).toHaveLength(10);
             expect(body.reviews).toBeSortedBy("votes", { descending: true });
-  
-            expect(body.total_count).toBe(13)
-  
+
+            expect(body.total_count).toBe(13);
           });
       });
-  
+
       test("accepts order query", () => {
         return request(app)
           .get("/api/reviews?order=asc")
@@ -143,8 +142,10 @@ describe("/api/reviews", () => {
           .then(({ body }) => {
             expect(body.reviews).toBeInstanceOf(Array);
             expect(body.reviews).toHaveLength(10);
-  
-            expect(body.reviews).toBeSortedBy("created_at", { ascending: true });
+
+            expect(body.reviews).toBeSortedBy("created_at", {
+              ascending: true,
+            });
           });
       });
       test("p and limit query work", () => {
@@ -154,7 +155,7 @@ describe("/api/reviews", () => {
           .then(({ body }) => {
             expect(body.reviews).toBeInstanceOf(Array);
             expect(body.reviews).toHaveLength(2);
-  
+
             expect(body.reviews).toEqual([
               {
                 owner: "mallionaire",
@@ -181,13 +182,14 @@ describe("/api/reviews", () => {
                 comment_count: 0,
               },
             ]);
-            expect(body.reviews).toBeSortedBy("created_at", { descending: true });
-  
-            expect(body.total_count).toBe(13)
-  
+            expect(body.reviews).toBeSortedBy("created_at", {
+              descending: true,
+            });
+
+            expect(body.total_count).toBe(13);
           });
       });
-  
+
       test("limit query works", () => {
         return request(app)
           .get("/api/reviews?p=1&&limit=2")
@@ -195,7 +197,7 @@ describe("/api/reviews", () => {
           .then(({ body }) => {
             expect(body.reviews).toBeInstanceOf(Array);
             expect(body.reviews).toHaveLength(2);
-  
+
             expect(body.reviews).toEqual([
               {
                 owner: "mallionaire",
@@ -222,22 +224,25 @@ describe("/api/reviews", () => {
                 comment_count: 0,
               },
             ]);
-  
-            expect(body.reviews).toBeSortedBy("created_at", { descending: true });
-  
-            expect(body.total_count).toBe(13)
-  
+
+            expect(body.reviews).toBeSortedBy("created_at", {
+              descending: true,
+            });
+
+            expect(body.total_count).toBe(13);
           });
       });
-  
+
       test("all queries work together", () => {
         return request(app)
-          .get("/api/reviews?order=asc&sort_by=title&category=social deduction&limit=5")
+          .get(
+            "/api/reviews?order=asc&sort_by=title&category=social deduction&limit=5"
+          )
           .expect(200)
           .then(({ body }) => {
             expect(body.reviews).toBeInstanceOf(Array);
             expect(body.reviews).toHaveLength(5);
-  
+
             body.reviews.forEach((review) => {
               expect(review).toMatchObject({
                 owner: expect.any(String),
@@ -251,14 +256,13 @@ describe("/api/reviews", () => {
                 comment_count: expect.any(Number),
               });
             });
-  
+
             expect(body.reviews).toBeSortedBy("title", { ascending: true });
-  
-            expect(body.total_count).toBe(11)
-  
+
+            expect(body.total_count).toBe(11);
           });
       });
-  
+
       test("if invalid sort input given, return error", () => {
         return request(app)
           .get("/api/reviews?sort_by=hello")
@@ -267,7 +271,7 @@ describe("/api/reviews", () => {
             expect(body.msg).toBe("Invalid sort query");
           });
       });
-  
+
       test("if invalid order input given, return error", () => {
         return request(app)
           .get("/api/reviews?order=hello")
@@ -276,7 +280,7 @@ describe("/api/reviews", () => {
             expect(body.msg).toBe("Invalid order query");
           });
       });
-  
+
       test("if invalid order input given, return error", () => {
         return request(app)
           .get("/api/reviews?category=hello")
@@ -285,7 +289,7 @@ describe("/api/reviews", () => {
             expect(body.msg).toBe("Given category does not exist");
           });
       });
-  
+
       test("if invalid query is given, return error", () => {
         return request(app)
           .get("/api/reviews?name=asc")
@@ -294,26 +298,25 @@ describe("/api/reviews", () => {
             expect(body.msg).toBe("Invalid query");
           });
       });
-  
-      test('should give error if the p query input is not int', () => {
+
+      test("should give error if the p query input is not int", () => {
         return request(app)
-        .get("/api/reviews?limit=susana")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe('limit queries need to be of type int');
-        });
+          .get("/api/reviews?limit=susana")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("limit queries need to be of type int");
+          });
       });
-  
-      test('should give error if the p query input is not int', () => {
+
+      test("should give error if the p query input is not int", () => {
         return request(app)
-        .get("/api/reviews?p=susana")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe('p queries need to be of type int');
-        });
+          .get("/api/reviews?p=susana")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("p queries need to be of type int");
+          });
       });
     });
-
   });
 
   describe("post request", () => {
@@ -668,6 +671,48 @@ describe("/api/reviews/:review_id/comments", () => {
         });
     });
 
+    test("get only n comments if limit query is given", () => {
+      return request(app)
+        .get("/api/reviews/3/comments?limit=1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments).toBeInstanceOf(Array);
+          expect(body.comments).toHaveLength(1);
+
+          expect(body.comments).toBeSortedBy("created_at", {
+            descending: true,
+          });
+
+          expect(body.comments[0]).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            review_id: 3,
+          });
+        });
+    });
+
+    test("get the offset comments if p is given", () => {
+      return request(app)
+        .get("/api/reviews/3/comments?p=1&limit=1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments).toBeInstanceOf(Array);
+          expect(body.comments).toHaveLength(1);
+
+          expect(body.comments[0]).toMatchObject({
+            comment_id: 3,
+            body: "I didn't know dogs could play games",
+            review_id: 3,
+            author: "philippaclaire9",
+            votes: 10,
+            created_at: "2021-01-18T10:09:48.110Z",
+          });
+        });
+    });
+
     test("should give error if id given is out of range", () => {
       return request(app)
         .get("/api/reviews/100/comments")
@@ -692,6 +737,24 @@ describe("/api/reviews/:review_id/comments", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.comments).toEqual([]);
+        });
+    });
+
+    test("should  give error, if limit query input is incorrect", () => {
+      return request(app)
+        .get("/api/reviews/3/comments?limit=me")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual('limit queries need to be of type int');
+        });
+    });
+
+    test("should  give error, if p query input is incorrect", () => {
+      return request(app)
+        .get("/api/reviews/3/comments?p=me")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual('p queries need to be of type int');
         });
     });
   });
@@ -832,6 +895,7 @@ describe("/api/users", () => {
     });
   });
 });
+
 describe("/api/comments/:comment_id", () => {
   describe("delete request", () => {
     test("should delete the comment given an id and return not content", () => {
